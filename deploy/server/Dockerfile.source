@@ -1,0 +1,5 @@
+FROM node:24.17.0-bookworm-slim
+WORKDIR /app
+COPY ["Пульт OBS/", "/app/"]
+USER node
+ENTRYPOINT ["node", "/app/server.mjs"]

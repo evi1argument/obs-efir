@@ -1,0 +1,5 @@
+services:
+  panel:
+    build:
+      context: ../..
+      dockerfile: deploy/server/Dockerfile.source

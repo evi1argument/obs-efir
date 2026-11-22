@@ -1,0 +1,21 @@
+services:
+  panel:
+    build: .
+    restart: unless-stopped
+    network_mode: host
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      OBS_REMOTE_MODE: server
+      OBS_REMOTE_PUBLIC_ORIGIN: ${OBS_REMOTE_PUBLIC_ORIGIN:?Run bash install.sh}
+      OBS_REMOTE_PAIR_CODE: ${OBS_REMOTE_PAIR_CODE:?Set OBS_REMOTE_PAIR_CODE}
+      OBS_REMOTE_WS_PORT: ${OBS_REMOTE_WS_PORT:-14455}
+      OBS_REMOTE_WS_PASSWORD_B64: ${OBS_REMOTE_WS_PASSWORD_B64:?Set OBS_REMOTE_WS_PASSWORD_B64}
+      OBS_REMOTE_BRIDGE_PORT: ${OBS_REMOTE_BRIDGE_PORT:-}
+      OBS_REMOTE_BRIDGE_CODE: ${OBS_REMOTE_BRIDGE_CODE:-}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/').then(r=>{if(!r.ok)process.exitCode=1}).catch(()=>{process.exitCode=1})"]
+      interval: 30s
+      timeout: 4s
+      retries: 3

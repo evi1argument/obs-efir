@@ -1,0 +1,13 @@
+**
+!Пульт OBS/
+!Пульт OBS/*.mjs
+!Пульт OBS/*.ps1
+!Пульт OBS/*.cs
+!Пульт OBS/public/
+!Пульт OBS/public/app.js
+!Пульт OBS/public/editor.js
+!Пульт OBS/public/index.html
+!Пульт OBS/public/live.js
+!Пульт OBS/public/pair.html
+!Пульт OBS/public/pair.js
+!Пульт OBS/public/style.css

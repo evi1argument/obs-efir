@@ -1,0 +1,16 @@
+{$OBS_REMOTE_DOMAIN} {
+	basic_auth {
+		{$OBS_REMOTE_USER} {$OBS_REMOTE_PASSWORD_HASH}
+	}
+
+	reverse_proxy 127.0.0.1:8787 {
+		header_up Host 127.0.0.1:8787
+		header_up -X-OBS-Remote-Proxy
+		header_up -Authorization
+		flush_interval 20ms
+		transport http {
+			dial_timeout 4s
+			response_header_timeout 25s
+		}
+	}
+}

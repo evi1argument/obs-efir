@@ -1,0 +1,31 @@
+{
+  "profile": "My streaming profile",
+  "scenes": [
+    {
+      "name": "Waiting",
+      "role": "Before the stream",
+      "sources": ["Background", "Music", "Chat alerts"]
+    },
+    {
+      "name": "Main",
+      "role": "Primary live scene",
+      "sources": ["Camera or screen", "Game or application", "Microphone", "Donations"]
+    },
+    {
+      "name": "Break",
+      "role": "Short break",
+      "sources": ["Background", "Music", "Chat alerts"]
+    },
+    {
+      "name": "Ending",
+      "role": "After the stream",
+      "sources": ["Ending screen", "Music"]
+    }
+  ],
+  "notes": [
+    "Use any scene and source names you like.",
+    "Add the same audio source to each scene where it should be available.",
+    "Keep one copy of each audio signal to avoid duplicates.",
+    "Lock finished visual sources in OBS."
+  ]
+}

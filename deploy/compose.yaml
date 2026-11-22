@@ -1,0 +1,19 @@
+services:
+  gateway:
+    image: caddy:2.11.9-alpine
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      OBS_REMOTE_DOMAIN: ${OBS_REMOTE_DOMAIN:?Set OBS_REMOTE_DOMAIN}
+      OBS_REMOTE_USER: ${OBS_REMOTE_USER:?Set OBS_REMOTE_USER}
+      OBS_REMOTE_PASSWORD_HASH: ${OBS_REMOTE_PASSWORD_HASH:?Set OBS_REMOTE_PASSWORD_HASH}
+      OBS_REMOTE_TUNNEL_PORT: ${OBS_REMOTE_TUNNEL_PORT:-18787}
+      OBS_REMOTE_PC_PORT: ${OBS_REMOTE_PC_PORT:-8787}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  caddy-data:
+  caddy-config:

@@ -1,0 +1,33 @@
+# Local development notes.
+/AGENTS.md
+/CONTEXT.md
+
+# Local OBS snapshots, experiments and generated media stay on this PC.
+/*.py
+/*.png
+/*.wav
+/*.mp4
+/*.html
+/Варианты оформления/
+/Игровая/
+/Пульт OBS/images/
+/Пульт OBS/music/
+/Пульт OBS/media/
+
+.env
+.env.*
+!deploy/.env.example
+!deploy/server/.env.example
+*.log
+*.bak
+*.local
+*.pem
+*.key
+config.json
+service.json
+GameRoom.json
+basic.ini
+__pycache__/
+node_modules/
+/dist/
+

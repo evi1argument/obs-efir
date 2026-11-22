@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111317"><title>OBS Remote</title>
+<link rel="stylesheet" href="/style.css"><script src="/live.js" defer></script><script src="/editor.js" defer></script><script src="/app.js" defer></script></head>
+<body class="admin">
+<header class="top"><div class="top-inner">
+  <h1>OBS Remote</h1>
+  <div class="top-status">
+    <div class="indicators" id="top-outputs" hidden>
+      <div class="stat"><span class="caption">Эфир</span><strong id="stream">—</strong></div>
+      <div class="stat"><span class="caption">Запись</span><strong id="recording">—</strong></div>
+    </div>
+    <span id="connection" class="connection" data-state="offline"><i></i><span>Ожидание</span></span>
+  </div>
+</div></header>
+<main>
+<section id="pair" class="pair panel" hidden>
+  <h2>Подключить телефон</h2>
+  <p id="pair-hint">Введи код, который показывает пульт на компьютере с OBS.</p>
+  <form id="pair-form"><label for="code">Код подключения</label><input id="code" name="code" autocomplete="off" autocapitalize="characters" maxlength="20" spellcheck="false"><button class="accent" type="submit">Подключить</button></form>
+  <p id="pair-error" class="error" role="alert"></p>
+  <a id="pair-link" href="/pair" hidden>Показать код на ПК</a>
+</section>
+<div id="remote" class="dashboard" data-view="scenes" hidden>
+  <nav class="admin-nav" aria-label="Управление OBS">
+    <button type="button" data-tab="scenes" aria-current="page">Сцены</button>
+    <button type="button" data-tab="studio">Студия</button>
+    <button type="button" data-tab="layers">Источники</button>
+    <button type="button" data-tab="mixer">Микшер</button>
+    <a id="admin-pair-link" href="/pair" hidden>Подключить телефон</a>
+  </nav>
+  <div class="admin-content">
+    <div class="workspace-heading">
+      <h2 id="workspace-title">Сцены</h2>
+      <nav id="studio-jumps" class="studio-jumps" aria-label="Панели студии" hidden>
+        <button type="button" class="quiet" data-studio-jump="scenes">Сцены</button>
+        <button type="button" class="quiet" data-studio-jump="layers">Слои</button>
+        <button type="button" class="quiet" data-studio-jump="mixer">Звук</button>
+      </nav>
+    </div>
+    <div class="workspace-grid">
+    <div class="preview-stack">
+  <section class="preview-column">
+    <div class="frame panel">
+      <div class="frame-head"><h2 id="program">OBS</h2><span id="studio"></span></div>
+      <div class="workbench" id="workbench">
+        <div class="picture"><video id="live" autoplay muted playsinline disableremoteplayback aria-label="Видео выхода OBS"></video><img id="preview" alt="Текущий кадр OBS" hidden><div id="placeholder">Подключаю видео OBS…</div></div>
+        <canvas id="placement" aria-hidden="true" hidden></canvas>
+      </div>
+      <div class="frame-foot"><span id="freshness" aria-live="off">Подключение</span><div class="frame-actions"><button id="expand-preview" type="button" class="quiet" title="Кадр на весь экран" aria-label="Кадр на весь экран">⛶</button><button id="edit" type="button" class="quiet" aria-pressed="false">Монтаж</button><button id="pause" type="button" class="quiet" hidden>Пауза</button></div></div>
+      <div class="workbench-tools" id="workbench-tools" hidden>
+        <span class="caption" id="workbench-caption">За кадром · снимки источников</span>
+        <div class="scale-choices" aria-label="Размер кадра в рабочей области">
+          <button type="button" data-workspace="wide" class="quiet" aria-pressed="true">Поле</button>
+          <button type="button" data-workspace="close" class="quiet" aria-pressed="false">Крупнее</button>
+        </div>
+      </div>
+    </div>
+    <p id="notice" class="notice" role="status"></p>
+  </section>
+      <div id="studio-scenes-slot"></div>
+    </div>
+  <section class="operator">
+    <section class="section scene-panel" data-pane="scenes" aria-label="Переключить сцену">
+      <h2 class="studio-pane-title">Сцены</h2>
+      <div id="scenes" class="scene-grid"></div>
+    </section>
+    <section class="section source-panel" data-pane="layers" aria-labelledby="layers-title" hidden>
+      <div class="pane-head layers-head"><h2 id="layers-title">Слои сцены</h2><button type="button" id="add-source" class="quiet add-source"><span aria-hidden="true">+</span> Добавить</button></div>
+      <input id="image-file" type="file" accept="image/*" hidden>
+      <input id="video-file" type="file" accept=".mp4,.mov,.webm,.mkv" hidden>
+      <ul id="layers" class="layers"></ul>
+      <div id="inspector" class="inspector" role="group" aria-labelledby="selected-name" hidden>
+        <div class="section-head"><h3 id="selected-name" class="sr-only"></h3><p class="inspector-label">Параметры слоя</p><button type="button" id="lock" class="quiet"></button></div>
+        <div class="layer-actions"><button type="button" id="edit-text" class="quiet primary-lite" hidden>Изменить текст</button><button type="button" id="edit-window" class="quiet primary-lite" hidden>Выбрать окно</button><button type="button" id="edit-media" class="quiet primary-lite" hidden>Воспроизведение</button><button type="button" id="up" class="quiet">↑ Выше</button><button type="button" id="down" class="quiet">↓ Ниже</button></div>
+        <p id="transform-hint" class="caption"></p>
+        <form id="transform">
+          <div class="fields">
+            <label>X, px<input id="position-x" type="number" step="0.1" required></label>
+            <label>Y, px<input id="position-y" type="number" step="0.1" required></label>
+            <label>Ширина, px<input id="source-width" type="number" min="1" max="32768" step="0.1" required></label>
+            <label>Высота, px<input id="source-height" type="number" min="1" max="32768" step="0.1" required></label>
+            <label>Поворот, °<input id="rotation" type="number" step="0.1" required></label>
+            <label class="aspect-lock"><input id="aspect-lock" type="checkbox" checked> Сохранять пропорции</label>
+          </div>
+          <button type="submit" class="quiet">Применить</button>
+        </form>
+        <div class="inspector-foot"><div class="layer-actions"><button type="button" id="save-shelf" class="quiet">На полку</button><button type="button" id="park-source" class="quiet">За кадр</button></div><button type="button" id="remove-source" class="quiet danger">Удалить из сцены</button></div>
+      </div>
+      <details class="shelf" id="shelf-panel">
+        <summary><span>Заготовки <span id="shelf-count" class="shelf-count" hidden></span></span><span class="layer-caret" aria-hidden="true"></span></summary>
+        <div class="shelf-body">
+          <p id="shelf-help" class="caption">Выбери слой и нажми «На полку».</p>
+          <ul id="shelf-items" class="shelf-items"></ul>
+        </div>
+      </details>
+    </section>
+    <section class="section" data-pane="mixer" hidden>
+      <h2 class="studio-pane-title">Микшер</h2>
+      <div class="pane-head mix-head"><h2>Каналы OBS</h2></div>
+      <div id="controls"></div>
+      <details class="spotify" id="spotify-panel" open>
+        <summary>Spotify</summary>
+        <div class="spotify-body">
+        <div class="pane-head"><h3 class="sr-only">Управление Spotify</h3><button type="button" id="spotify-open" class="quiet">Открыть на ПК</button></div>
+        <div class="now-playing">
+          <span class="music-symbol" aria-hidden="true">♫</span>
+          <div><strong id="spotify-title">Подключение…</strong><p class="caption" id="spotify-artist"></p></div>
+        </div>
+        <div class="transport">
+          <button type="button" id="spotify-previous" class="quiet" disabled>Пред.</button>
+          <button type="button" id="spotify-play" class="quiet primary-lite" disabled>Играть</button>
+          <button type="button" id="spotify-next" class="quiet" disabled>След.</button>
+        </div>
+        <form id="spotify-link-form" class="link-form">
+          <input type="text" id="spotify-link" inputmode="url" placeholder="Ссылка на трек или плейлист" aria-label="Ссылка Spotify" maxlength="300" required>
+          <button class="quiet" type="submit">Открыть</button>
+        </form>
+        <div class="mixer-strip" id="spotify-route" hidden>
+          <button type="button" id="spotify-mute" class="quiet" aria-pressed="false">Звук в OBS</button>
+          <label><span class="caption">Spotify на ПК</span><input type="range" id="spotify-volume" min="0" max="100" value="0" disabled><output id="spotify-level">—</output></label>
+        </div>
+        </div>
+      </details>
+      <div class="music-head"><h3>Музыка в сцене</h3><button type="button" id="add-music" class="quiet">＋ Аудиофайл</button></div>
+      <input id="music-file" type="file" accept=".mp3,.wav,.ogg,.flac,.m4a" hidden>
+      <div id="tracks"></div>
+    </section>
+  </section>
+    </div>
+  </div>
+</div>
+</main>
+<dialog id="text-dialog">
+  <form id="text-form">
+    <h2 id="text-title">Добавить текст</h2>
+    <label for="text-value">Текст в кадре</label>
+    <textarea id="text-value" rows="4" maxlength="500" required></textarea>
+    <div class="fields">
+      <label>Размер<input id="text-size" type="number" min="16" max="160" value="64" required></label>
+      <label>Цвет<input id="text-color" type="color" value="#ffffff"></label>
+    </div>
+    <p id="text-error" role="alert" class="error" hidden></p>
+    <div class="frame-actions"><button type="button" id="cancel-text" class="quiet">Отмена</button><button class="accent" type="submit">Показать текст</button></div>
+  </form>
+</dialog>
+<dialog id="add-dialog">
+  <div class="dialog-content">
+    <div class="section-head"><h2>Добавить источник</h2><button type="button" class="quiet" data-dismiss="add-dialog">Закрыть</button></div>
+    <div class="add-grid">
+      <button type="button" id="upload" class="quiet">Картинка</button>
+      <button type="button" id="add-text" class="quiet">Текст</button>
+      <button type="button" id="add-window" class="quiet">Окно приложения</button>
+      <button type="button" id="add-video" class="quiet">Видео из файла</button>
+      <button type="button" id="add-existing" class="quiet">Существующий источник</button>
+    </div>
+  </div>
+</dialog>
+<dialog id="choose-dialog">
+  <form id="choose-form">
+    <h2 id="choose-title"></h2>
+    <label for="choose-option">Доступные варианты</label>
+    <select id="choose-option" required></select>
+    <p id="choose-error" class="error" role="alert" hidden></p>
+    <div class="frame-actions">
+      <button type="button" id="refresh-choices" class="quiet">Обновить</button>
+      <button type="button" class="quiet" data-dismiss="choose-dialog">Отмена</button>
+      <button type="submit" id="choose-apply" class="accent">Применить</button>
+    </div>
+  </form>
+</dialog>
+<dialog id="media-dialog">
+  <div class="dialog-content">
+    <div class="section-head"><h2 id="media-title">Воспроизведение</h2><button type="button" class="quiet" data-dismiss="media-dialog">Закрыть</button></div>
+    <div id="media-player"></div>
+    <p id="media-error" class="error" role="alert" hidden></p>
+  </div>
+</dialog>
+<dialog id="remove-dialog">
+  <form id="remove-form">
+    <h2 id="remove-title">Удалить источник из сцены?</h2>
+    <p id="remove-name"></p>
+    <p id="remove-error" class="error" role="alert" hidden></p>
+    <div class="frame-actions"><button type="button" class="quiet" data-dismiss="remove-dialog" autofocus>Отмена</button><button type="submit" class="quiet danger">Удалить</button></div>
+  </form>
+</dialog>
+<div id="shelf-ghost" class="shelf-ghost" aria-hidden="true" hidden></div>
+</body></html>
